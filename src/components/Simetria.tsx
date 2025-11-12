@@ -384,10 +384,10 @@ export default function Simetria() {
       )}
 
       {/* Header */}
-      <div className="relative z-10 flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+      <div className="relative z-10 mb-6">
         <button
           onClick={() => navigate('/')}
-          className="bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 text-gray-900 font-bold py-2 px-6 rounded-full hover:scale-105 transition-all shadow-xl border-2 border-yellow-200 flex items-center gap-2"
+          className="flex items-center gap-2 md:gap-3 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 text-gray-900 font-bold py-2 md:py-3 px-4 md:px-6 rounded-full shadow-lg border-2 border-yellow-200 hover:from-yellow-400 hover:to-yellow-600 hover:scale-110 transition-all duration-300"
         >
           <span className="text-xl">←</span>
           <span>Volver al Inicio</span>
