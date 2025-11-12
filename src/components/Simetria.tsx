@@ -386,7 +386,7 @@ export default function Simetria() {
       {/* Header */}
       <div className="relative z-10 mb-6">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate(-1)}
           className="flex items-center gap-2 md:gap-3 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 text-gray-900 font-bold py-2 md:py-3 px-4 md:px-6 rounded-full shadow-lg border-2 border-yellow-200 hover:from-yellow-400 hover:to-yellow-600 hover:scale-110 transition-all duration-300"
         >
           <span className="text-xl">←</span>
