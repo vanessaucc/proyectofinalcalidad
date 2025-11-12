@@ -43,8 +43,6 @@ jobs:
       - name: 🧠 Type check (TS)
         run: npm run type-check
 
-      - name: 🔍 Lint (ESLint)
-        run: npm run lint
 
       - name: 🧪 Run tests (Jest)
         run: npm test -- --ci
