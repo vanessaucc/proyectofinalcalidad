@@ -252,8 +252,8 @@ export default function SistemaSolar() {
           );
         })}
 
-        {/* Sol */}
-        <div className="absolute w-16 h-16 md:w-24 md:h-24 flex items-center justify-center z-20">
+        {/* Sol - Con z-index bajo para que no tape los planetas */}
+        <div className="absolute w-16 h-16 md:w-24 md:h-24 flex items-center justify-center z-0 pointer-events-none">
           <div className="absolute inset-0">
             {Array.from({ length: 12 }).map((_, i) => (
               <div
@@ -280,7 +280,7 @@ export default function SistemaSolar() {
           </div>
         </div>
 
-        {/* Planetas girando con nombres SIEMPRE visibles */}
+        {/* Planetas girando con nombres SIEMPRE visibles - z-index alto para estar sobre el Sol */}
         {planets.map((planet, index) => {
           const orbitRadius = 60 + index * 40;
           const speed = 20 + index * 5;
@@ -295,7 +295,8 @@ export default function SistemaSolar() {
                 width: `${orbitRadius * 2}px`,
                 height: `${orbitRadius * 2}px`,
                 animation: `orbit ${speed}s linear infinite`,
-                animationDelay: `${-index * 2}s`
+                animationDelay: `${-index * 2}s`,
+                zIndex: 30
               }}
             >
               <div
@@ -308,10 +309,11 @@ export default function SistemaSolar() {
               >
                 <button
                   onClick={() => handlePlanetClick(planet)}
-                  className={`${planet.color} rounded-full shadow-xl hover:scale-125 transition-all duration-300 cursor-pointer flex items-center justify-center font-bold hover:shadow-2xl hover:z-30 group pointer-events-auto relative ${isVisited ? 'ring-4 ring-green-400' : ''}`}
+                  className={`${planet.color} rounded-full shadow-xl hover:scale-125 transition-all duration-300 cursor-pointer flex items-center justify-center font-bold hover:shadow-2xl group pointer-events-auto relative ${isVisited ? 'ring-4 ring-green-400' : ''}`}
                   style={{
                     width: `${planet.size}px`,
                     height: `${planet.size}px`,
+                    zIndex: 40
                   }}
                   aria-label={`Ver información de ${planet.name}`}
                 >
@@ -327,7 +329,8 @@ export default function SistemaSolar() {
                   style={{
                     animation: 'float 2s ease-in-out infinite',
                     bottom: `-${planet.size / 2 + 16}px`,
-                    pointerEvents: 'none'
+                    pointerEvents: 'none',
+                    zIndex: 45
                   }}
                 >
                   {planet.icon} {planet.name}
@@ -478,7 +481,10 @@ export default function SistemaSolar() {
 
             {/* Fun Fact adicional */}
             {selectedPlanet.funFact && (
-              <div className="bg-gradient-to-r from-pink-200 to-purple-200 rounded-xl p-3 border-2 border-pink-400">
+              <div 
+                data-testid="fun-fact-section"
+                className="bg-gradient-to-r from-pink-200 to-purple-200 rounded-xl p-3 border-2 border-pink-400"
+              >
                 <p className="text-xs font-bold text-purple-900 mb-1 flex items-center gap-1">
                   <span className="text-base">🎉</span> ¡Dato Divertido!
                 </p>
