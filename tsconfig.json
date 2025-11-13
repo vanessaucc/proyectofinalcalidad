@@ -2,12 +2,12 @@
   "compilerOptions": {
     "target": "ES2022",
     "useDefineForClassFields": true,
-    "module": "commonjs",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
 
-    /* Module resolution for Jest */
-    "moduleResolution": "node",
+    /* Compatibilidad con ES modules */
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
 
@@ -15,10 +15,10 @@
     "allowImportingTsExtensions": false,
     "noEmit": true,
 
-    /* JSX/React */
+    /* JSX / React */
     "jsx": "react-jsx",
 
-    /* Linting */
+    /* Linting y comprobaciones */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
