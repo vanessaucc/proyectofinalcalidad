@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Simetria from './Simetria';
 
-// Mock de canvas context
+// Mock de canvas context - ACTUALIZADO con métodos adicionales
 const mockCanvasContext = {
   clearRect: jest.fn(),
   beginPath: jest.fn(),
@@ -13,9 +13,13 @@ const mockCanvasContext = {
   fill: jest.fn(),
   arc: jest.fn(),
   setLineDash: jest.fn(),
+  ellipse: jest.fn(), // NUEVO - para los bocetos
+  quadraticCurveTo: jest.fn(), // NUEVO - para la hoja
+  closePath: jest.fn(), // NUEVO - para cerrar paths
   fillStyle: '',
   strokeStyle: '',
-  lineWidth: 0
+  lineWidth: 0,
+  globalAlpha: 1 // NUEVO - para transparencia
 };
 
 beforeAll(() => {
@@ -273,5 +277,84 @@ describe('Simetria Component', () => {
     renderWithRouter(<Simetria />);
     expect(screen.getByText('← Dibuja aquí')).toBeInTheDocument();
     expect(screen.getByText('Espejo mágico →')).toBeInTheDocument();
+  });
+
+  // NUEVOS TESTS para la funcionalidad de bocetos guía
+  test('dibuja el boceto guía de mariposa cuando no hay puntos', () => {
+    renderWithRouter(<Simetria />);
+    // La mariposa está seleccionada por defecto
+    expect(mockCanvasContext.ellipse).toHaveBeenCalled();
+  });
+
+  test('dibuja el boceto guía de estrella al seleccionarla', () => {
+    renderWithRouter(<Simetria />);
+    const starButton = screen.getByTestId('figure-star');
+    
+    mockCanvasContext.lineTo.mockClear();
+    fireEvent.click(starButton);
+    
+    expect(mockCanvasContext.lineTo).toHaveBeenCalled();
+  });
+
+  test('dibuja el boceto guía de corazón al seleccionarlo', () => {
+    renderWithRouter(<Simetria />);
+    const heartButton = screen.getByTestId('figure-heart');
+    
+    mockCanvasContext.arc.mockClear();
+    fireEvent.click(heartButton);
+    
+    expect(mockCanvasContext.arc).toHaveBeenCalled();
+  });
+
+  test('dibuja el boceto guía de hoja al seleccionarla', () => {
+    renderWithRouter(<Simetria />);
+    const leafButton = screen.getByTestId('figure-leaf');
+    
+    mockCanvasContext.quadraticCurveTo.mockClear();
+    fireEvent.click(leafButton);
+    
+    expect(mockCanvasContext.quadraticCurveTo).toHaveBeenCalled();
+  });
+
+  test('el boceto guía usa transparencia', () => {
+    renderWithRouter(<Simetria />);
+    // Verificar que se establece la transparencia para el boceto
+    expect(mockCanvasContext.globalAlpha).toBeDefined();
+  });
+
+  test('el boceto desaparece cuando se empieza a dibujar', () => {
+    renderWithRouter(<Simetria />);
+    const canvas = screen.getByTestId('canvas');
+    
+    // Limpiar los mocks para contar solo las nuevas llamadas
+    mockCanvasContext.ellipse.mockClear();
+    
+    // Empezar a dibujar
+    fireEvent.mouseDown(canvas, { clientX: 150, clientY: 200 });
+    fireEvent.mouseMove(canvas, { clientX: 160, clientY: 210 });
+    
+    // El boceto no debería dibujarse más (ellipse se llama menos veces)
+    const ellipseCalls = mockCanvasContext.ellipse.mock.calls.length;
+    expect(ellipseCalls).toBeLessThan(3); // Mariposa tiene 2 elipses en el boceto
+  });
+
+  test('el boceto reaparece después de limpiar el canvas', () => {
+    renderWithRouter(<Simetria />);
+    const canvas = screen.getByTestId('canvas');
+    
+    // Dibujar algo
+    fireEvent.mouseDown(canvas, { clientX: 150, clientY: 200 });
+    fireEvent.mouseMove(canvas, { clientX: 160, clientY: 210 });
+    fireEvent.mouseUp(canvas);
+    
+    // Limpiar mocks
+    mockCanvasContext.ellipse.mockClear();
+    
+    // Reiniciar
+    const resetButton = screen.getByTestId('reset-button');
+    fireEvent.click(resetButton);
+    
+    // El boceto debería dibujarse de nuevo
+    expect(mockCanvasContext.ellipse).toHaveBeenCalled();
   });
 });

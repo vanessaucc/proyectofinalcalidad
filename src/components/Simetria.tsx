@@ -54,6 +54,11 @@ export default function Simetria() {
     // Limpiar canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Dibujar boceto guía de la figura seleccionada
+    if (leftPoints.length === 0) {
+      drawFigureGuide(ctx);
+    }
+
     // Línea de simetría
     ctx.strokeStyle = '#6366F1';
     ctx.lineWidth = 4;
@@ -102,6 +107,114 @@ export default function Simetria() {
         ctx.fill();
       });
     }
+  };
+
+  const drawFigureGuide = (ctx: CanvasRenderingContext2D) => {
+    const currentFigure = figures.find(f => f.id === selectedFigure);
+    if (!currentFigure) return;
+
+    // Estilo para el boceto guía
+    ctx.strokeStyle = currentFigure.color;
+    ctx.fillStyle = currentFigure.color;
+    ctx.lineWidth = 3;
+    ctx.globalAlpha = 0.3; // Transparente para que sea una guía
+    ctx.setLineDash([5, 5]); // Línea punteada
+
+    const offsetX = 150; // Posición del boceto en el lado izquierdo
+    const offsetY = 200; // Centro vertical
+
+    switch (selectedFigure) {
+      case 'butterfly':
+        // Ala superior izquierda de mariposa
+        ctx.beginPath();
+        ctx.ellipse(offsetX, offsetY - 40, 50, 60, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        // Ala inferior izquierda
+        ctx.beginPath();
+        ctx.ellipse(offsetX, offsetY + 40, 40, 50, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        // Cuerpo (en el centro)
+        ctx.beginPath();
+        ctx.ellipse(centerX, offsetY, 8, 70, 0, 0, Math.PI * 2);
+        ctx.fill();
+        // Antenas
+        ctx.beginPath();
+        ctx.moveTo(centerX, offsetY - 70);
+        ctx.lineTo(centerX - 15, offsetY - 90);
+        ctx.moveTo(centerX, offsetY - 70);
+        ctx.lineTo(centerX + 15, offsetY - 90);
+        ctx.stroke();
+        break;
+
+      case 'star':
+        // Estrella de 5 puntas (mitad izquierda)
+        const starPoints = 5;
+        const outerRadius = 70;
+        const innerRadius = 30;
+        ctx.beginPath();
+        for (let i = 0; i <= starPoints; i++) {
+          const angle = (Math.PI / starPoints) * i - Math.PI / 2;
+          const radius = i % 2 === 0 ? outerRadius : innerRadius;
+          const x = centerX + radius * Math.cos(angle);
+          const y = offsetY + radius * Math.sin(angle);
+          if (i === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+        // Completar mitad izquierda
+        for (let i = starPoints; i >= 0; i--) {
+          const angle = (Math.PI / starPoints) * i - Math.PI / 2;
+          const radius = i % 2 === 0 ? outerRadius : innerRadius;
+          const x = centerX - radius * Math.cos(angle);
+          const y = offsetY + radius * Math.sin(angle);
+          ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+        break;
+
+      case 'heart':
+        // Corazón (mitad izquierda)
+        ctx.beginPath();
+        // Lóbulo superior izquierdo
+        ctx.arc(offsetX + 20, offsetY - 20, 30, Math.PI, 0, false);
+        // Curva hacia abajo
+        ctx.lineTo(centerX, offsetY + 60);
+        // Línea de simetría
+        ctx.lineTo(centerX, offsetY - 50);
+        ctx.closePath();
+        ctx.stroke();
+        break;
+
+      case 'leaf':
+        // Hoja (mitad izquierda con vena central)
+        ctx.beginPath();
+        ctx.moveTo(centerX, offsetY - 80);
+        // Curva exterior de la hoja
+        ctx.quadraticCurveTo(offsetX - 40, offsetY - 30, offsetX, offsetY);
+        ctx.quadraticCurveTo(offsetX - 40, offsetY + 30, centerX, offsetY + 80);
+        ctx.stroke();
+        
+        // Vena central
+        ctx.beginPath();
+        ctx.moveTo(centerX, offsetY - 80);
+        ctx.lineTo(centerX, offsetY + 80);
+        ctx.stroke();
+        
+        // Venas secundarias
+        for (let i = -60; i <= 60; i += 30) {
+          ctx.beginPath();
+          ctx.moveTo(centerX, offsetY + i);
+          ctx.lineTo(centerX - 40, offsetY + i - 15);
+          ctx.stroke();
+        }
+        break;
+    }
+
+    ctx.globalAlpha = 1.0; // Restaurar opacidad
+    ctx.setLineDash([]); // Restaurar línea sólida
   };
 
   const getCanvasCoordinates = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -261,6 +374,18 @@ export default function Simetria() {
                 </p>
               </div>
 
+              <div className="mt-4 bg-gradient-to-r from-cyan-200 to-blue-200 rounded-2xl p-5 border-4 border-cyan-300 shadow-lg">
+                <p className="text-sm font-bold text-gray-800 mb-2 text-center text-lg">
+                  ✏️ ¿Cómo dibujar?
+                </p>
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  1️⃣ Elige tu figura favorita arriba<br />
+                  2️⃣ Verás un boceto punteado en el tablero<br />
+                  3️⃣ Dibuja encima del boceto en el lado izquierdo<br />
+                  4️⃣ ¡Mira la magia del espejo! ✨
+                </p>
+              </div>
+
               {leftPoints.length > 0 && (
                 <div className="mt-4 bg-gradient-to-r from-green-300 to-blue-300 rounded-2xl p-4 border-4 border-green-400 shadow-lg animate-pulse">
                   <p className="text-center font-bold text-gray-800">
@@ -317,11 +442,13 @@ export default function Simetria() {
                 <div className="bg-gradient-to-r from-blue-100 to-purple-100 border-4 border-blue-400 rounded-2xl p-5 shadow-lg">
                   <p className="text-gray-800 font-bold text-xl text-center mb-2">
                     {leftPoints.length === 0
-                      ? '👆 Haz clic y arrastra en el lado izquierdo para dibujar'
+                      ? '👆 ¡Sigue la línea punteada para dibujar tu figura! Dibuja en el lado izquierdo'
                       : `✨ ¡Increíble! Llevas ${leftPoints.length} puntos dibujados`}
                   </p>
                   <p className="text-gray-700 text-base text-center font-semibold">
-                    {leftPoints.length > 0 && '¡Mira cómo brilla tu creación simétrica! 🌈✨'}
+                    {leftPoints.length === 0 
+                      ? '🎨 El boceto te ayuda a saber dónde dibujar' 
+                      : '¡Mira cómo brilla tu creación simétrica! 🌈✨'}
                   </p>
                 </div>
               </div>
