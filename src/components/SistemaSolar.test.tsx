@@ -1,4 +1,5 @@
 // src/components/SistemaSolar.test.tsx
+//import { jest } from "@jest/globals";
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import SistemaSolar, { planets } from './SistemaSolar';

@@ -21,16 +21,15 @@ jobs:
           cache: 'npm'
 
       - name: 📦 Instalar dependencias
-        run: npm ci
+        run: npm install
 
-      - name: 🧪 Ejecutar pruebas
-        env:
-          NODE_OPTIONS: "--experimental-vm-modules"
-        run: npm test -- --runInBand --ci --passWithNoTests
+      - name: 🧪 Ejecutar pruebas con Jest
+        run: |
+          npm test -- --runInBand --ci --passWithNoTests --detectOpenHandles
 
       - name: ✅ Resultado
         if: success()
-        run: echo "✅ Todas las pruebas pasaron correctamente!"
+        run: echo "✅ Todas las pruebas pasaron correctamente."
 
       - name: ❌ Error en pruebas
         if: failure()

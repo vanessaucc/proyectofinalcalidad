@@ -1,4 +1,5 @@
 // src/components/Simetria.test.tsx
+import { jest } from "@jest/globals";
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Simetria from './Simetria';
