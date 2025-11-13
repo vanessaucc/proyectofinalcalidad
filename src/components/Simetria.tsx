@@ -28,7 +28,6 @@ export default function Simetria() {
   const [selectedFigure, setSelectedFigure] = useState<FigureType>('butterfly');
   const [leftPoints, setLeftPoints] = useState<Point[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [showExample, setShowExample] = useState(true);
   const [score, setScore] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const centerX = 300;
@@ -36,14 +35,14 @@ export default function Simetria() {
   // Dibujar cuando hay cambios
   useEffect(() => {
     drawCanvas();
-  }, [leftPoints, selectedFigure, showExample]);
+  }, [leftPoints, selectedFigure]);
 
   // Celebración cuando alcanza puntos
   useEffect(() => {
-    if (leftPoints.length > 0 && leftPoints.length % 15 === 0 && !showExample) {
+    if (leftPoints.length > 0 && leftPoints.length % 15 === 0) {
       setScore(prev => prev + 10);
     }
-  }, [leftPoints.length, showExample]);
+  }, [leftPoints.length]);
 
   const drawCanvas = () => {
     const canvas = canvasRef.current;
@@ -126,11 +125,6 @@ export default function Simetria() {
     const { x, y } = coords;
 
     if (x < centerX) {
-      if (showExample) {
-        setShowExample(false);
-        setLeftPoints([]);
-        setScore(0);
-      }
       setIsDrawing(true);
       setLeftPoints([{ x, y }]);
     }
@@ -156,16 +150,16 @@ export default function Simetria() {
   const handleReset = () => {
     setLeftPoints([]);
     setIsDrawing(false);
-    setShowExample(false);
     setScore(0);
   };
 
   const handleChangeFigure = (figureId: FigureType) => {
     setSelectedFigure(figureId);
-    setShowExample(false);
     setLeftPoints([]);
     setIsDrawing(false);
     setScore(0);
+    // Redibujar inmediatamente con la nueva figura
+    setTimeout(() => drawCanvas(), 0);
   };
 
   return (
@@ -267,7 +261,7 @@ export default function Simetria() {
                 </p>
               </div>
 
-              {!showExample && leftPoints.length > 0 && (
+              {leftPoints.length > 0 && (
                 <div className="mt-4 bg-gradient-to-r from-green-300 to-blue-300 rounded-2xl p-4 border-4 border-green-400 shadow-lg animate-pulse">
                   <p className="text-center font-bold text-gray-800">
                     🌟 Llevas {leftPoints.length} puntos dibujados
