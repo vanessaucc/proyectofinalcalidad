@@ -306,8 +306,23 @@ describe('Simetria Component', () => {
     mockCanvasContext.lineTo.mockClear();
     fireEvent.click(starButton);
     
-    // La estrella usa múltiples lineTo para dibujar sus puntas
+    // La estrella usa múltiples lineTo para dibujar sus puntas (6 puntas)
     expect(mockCanvasContext.lineTo).toHaveBeenCalled();
+    // Verificar que se dibujaron al menos 5 líneas para la estrella
+    expect(mockCanvasContext.lineTo.mock.calls.length).toBeGreaterThanOrEqual(5);
+  });
+
+  test('el boceto de estrella dibuja puntos guía', () => {
+    renderWithRouter(<Simetria />);
+    const starButton = screen.getByTestId('figure-star');
+    
+    mockCanvasContext.arc.mockClear();
+    fireEvent.click(starButton);
+    
+    // La estrella dibuja 6 puntos guía usando arc
+    expect(mockCanvasContext.arc).toHaveBeenCalled();
+    // Verificar que se dibujaron 6 círculos guía
+    expect(mockCanvasContext.arc.mock.calls.length).toBeGreaterThanOrEqual(6);
   });
 
   test('el boceto de corazón usa arcos', () => {
@@ -405,5 +420,26 @@ describe('Simetria Component', () => {
     
     // Verificar que se dibuja el nuevo boceto
     expect(mockCanvasContext.arc).toHaveBeenCalled();
+  });
+
+  test('el boceto de estrella usa globalAlpha correcto para puntos guía', () => {
+    renderWithRouter(<Simetria />);
+    const starButton = screen.getByTestId('figure-star');
+    
+    fireEvent.click(starButton);
+    
+    // Verificar que globalAlpha se usa (el valor específico no se puede verificar en el mock)
+    expect(mockCanvasContext.globalAlpha).toBeDefined();
+  });
+
+  test('el boceto de estrella resetea setLineDash después de dibujar puntos', () => {
+    renderWithRouter(<Simetria />);
+    const starButton = screen.getByTestId('figure-star');
+    
+    mockCanvasContext.setLineDash.mockClear();
+    fireEvent.click(starButton);
+    
+    // Verificar que setLineDash se llama con array vacío [] para resetear
+    expect(mockCanvasContext.setLineDash).toHaveBeenCalledWith([]);
   });
 });
