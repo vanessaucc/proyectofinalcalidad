@@ -159,23 +159,41 @@ export default function Simetria() {
         break;
 
       case 'star':
-        // Estrella de 5 puntas - solo el lado izquierdo
-        const points = [
-          { x: centerX, y: centerY - 80 },           // Punta superior (en el centro)
-          { x: centerX - 25, y: centerY - 30 },      // Interior izquierdo superior
-          { x: centerX - 80, y: centerY - 25 },      // Punta izquierda
-          { x: centerX - 35, y: centerY + 10 },      // Interior izquierdo inferior
-          { x: centerX - 50, y: centerY + 70 },      // Punta inferior izquierda
-          { x: centerX, y: centerY + 35 }            // Interior inferior (en el centro)
+        // Estrella de 5 puntas - solo el lado izquierdo y más grande
+        ctx.beginPath();
+        // Punta superior (en el eje)
+        ctx.moveTo(centerX, centerY - 90);
+        // Primera punta izquierda superior
+        ctx.lineTo(centerX - 30, centerY - 30);
+        // Segunda punta izquierda (hacia fuera)
+        ctx.lineTo(centerX - 90, centerY - 25);
+        // Vuelta hacia el centro inferior
+        ctx.lineTo(centerX - 40, centerY + 15);
+        // Punta inferior izquierda
+        ctx.lineTo(centerX - 55, centerY + 75);
+        // Centro inferior
+        ctx.lineTo(centerX, centerY + 40);
+        // Volver a la punta superior
+        ctx.lineTo(centerX, centerY - 90);
+        ctx.stroke();
+        
+        // Dibujar puntos guía en las puntas para ayudar a los niños
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 0.5;
+        const starGuidePoints = [
+          { x: centerX, y: centerY - 90 },
+          { x: centerX - 30, y: centerY - 30 },
+          { x: centerX - 90, y: centerY - 25 },
+          { x: centerX - 40, y: centerY + 15 },
+          { x: centerX - 55, y: centerY + 75 },
+          { x: centerX, y: centerY + 40 }
         ];
         
-        ctx.beginPath();
-        ctx.moveTo(points[0].x, points[0].y);
-        for (let i = 1; i < points.length; i++) {
-          ctx.lineTo(points[i].x, points[i].y);
-        }
-        ctx.lineTo(points[0].x, points[0].y);
-        ctx.stroke();
+        starGuidePoints.forEach(point => {
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
+          ctx.fill();
+        });
         break;
 
       case 'heart':
