@@ -117,10 +117,10 @@ export default function Simetria() {
     ctx.strokeStyle = currentFigure.color;
     ctx.fillStyle = currentFigure.color;
     ctx.lineWidth = 2;
-    ctx.globalAlpha = 0.4;
-    ctx.setLineDash([8, 4]);
+    ctx.globalAlpha = 0.4; // Más transparente para que sea una guía suave
+    ctx.setLineDash([8, 4]); // Línea punteada visible
 
-    const centerY = 200;
+    const centerY = 200; // Centro vertical del canvas
 
     switch (selectedFigure) {
       case 'butterfly':
@@ -140,7 +140,7 @@ export default function Simetria() {
         ctx.quadraticCurveTo(centerX - 30, centerY + 90, centerX - 10, centerY + 80);
         ctx.stroke();
         
-        // Cuerpo central
+        // Cuerpo central (en el eje de simetría)
         ctx.setLineDash([]);
         ctx.globalAlpha = 0.5;
         ctx.beginPath();
@@ -159,37 +159,39 @@ export default function Simetria() {
         break;
 
       case 'star':
-        // Estrella de 5 puntas - solo el lado izquierdo como guía
+        // Estrella de 5 puntas - solo el lado izquierdo y más grande
         ctx.beginPath();
-        // Punta superior (en el eje de simetría)
-        ctx.moveTo(centerX, centerY - 100);
-        // Primera punta interior izquierda
-        ctx.lineTo(centerX - 25, centerY - 35);
-        // Segunda punta exterior izquierda (la más alejada)
-        ctx.lineTo(centerX - 95, centerY - 30);
-        // Tercera punta interior izquierda
-        ctx.lineTo(centerX - 35, centerY + 10);
-        // Cuarta punta inferior izquierda
-        ctx.lineTo(centerX - 60, centerY + 80);
-        // Punta inferior central (en el eje de simetría)
-        ctx.lineTo(centerX, centerY + 35);
+        // Punta superior (en el eje)
+        ctx.moveTo(centerX, centerY - 90);
+        // Primera punta izquierda superior
+        ctx.lineTo(centerX - 30, centerY - 30);
+        // Segunda punta izquierda (hacia fuera)
+        ctx.lineTo(centerX - 90, centerY - 25);
+        // Vuelta hacia el centro inferior
+        ctx.lineTo(centerX - 40, centerY + 15);
+        // Punta inferior izquierda
+        ctx.lineTo(centerX - 55, centerY + 75);
+        // Centro inferior
+        ctx.lineTo(centerX, centerY + 40);
+        // Volver a la punta superior
+        ctx.lineTo(centerX, centerY - 90);
         ctx.stroke();
         
         // Dibujar puntos guía en las puntas para ayudar a los niños
         ctx.setLineDash([]);
-        ctx.globalAlpha = 0.6;
+        ctx.globalAlpha = 0.5;
         const starGuidePoints = [
-          { x: centerX, y: centerY - 100 },        // Punta superior
-          { x: centerX - 25, y: centerY - 35 },    // Interior superior izq
-          { x: centerX - 95, y: centerY - 30 },    // Exterior izquierda
-          { x: centerX - 35, y: centerY + 10 },    // Interior medio izq
-          { x: centerX - 60, y: centerY + 80 },    // Inferior izquierda
-          { x: centerX, y: centerY + 35 }          // Punta inferior
+          { x: centerX, y: centerY - 90 },
+          { x: centerX - 30, y: centerY - 30 },
+          { x: centerX - 90, y: centerY - 25 },
+          { x: centerX - 40, y: centerY + 15 },
+          { x: centerX - 55, y: centerY + 75 },
+          { x: centerX, y: centerY + 40 }
         ];
         
         starGuidePoints.forEach(point => {
           ctx.beginPath();
-          ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
+          ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
           ctx.fill();
         });
         break;
@@ -197,9 +199,12 @@ export default function Simetria() {
       case 'heart':
         // Corazón - mitad izquierda
         ctx.beginPath();
+        // Parte superior (semicírculo)
         ctx.arc(centerX - 40, centerY - 30, 35, 0, Math.PI, true);
+        // Curva hacia la punta del corazón
         ctx.quadraticCurveTo(centerX - 90, centerY, centerX - 70, centerY + 40);
         ctx.quadraticCurveTo(centerX - 40, centerY + 70, centerX, centerY + 90);
+        // Línea de vuelta al centro superior
         ctx.lineTo(centerX, centerY - 65);
         ctx.closePath();
         ctx.stroke();
@@ -208,13 +213,14 @@ export default function Simetria() {
       case 'leaf':
         // Hoja - mitad izquierda con nervaduras
         ctx.beginPath();
+        // Contorno exterior de la hoja
         ctx.moveTo(centerX, centerY - 90);
         ctx.quadraticCurveTo(centerX - 60, centerY - 60, centerX - 80, centerY - 20);
         ctx.quadraticCurveTo(centerX - 90, centerY + 20, centerX - 70, centerY + 60);
         ctx.quadraticCurveTo(centerX - 40, centerY + 85, centerX, centerY + 95);
         ctx.stroke();
         
-        // Nervadura central
+        // Nervadura central (eje de simetría)
         ctx.setLineDash([]);
         ctx.globalAlpha = 0.3;
         ctx.beginPath();
@@ -243,8 +249,8 @@ export default function Simetria() {
         break;
     }
 
-    ctx.globalAlpha = 1.0;
-    ctx.setLineDash([]);
+    ctx.globalAlpha = 1.0; // Restaurar opacidad
+    ctx.setLineDash([]); // Restaurar línea sólida
   };
 
   const getCanvasCoordinates = (e: React.MouseEvent<HTMLCanvasElement>) => {
